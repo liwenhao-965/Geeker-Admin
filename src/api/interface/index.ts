@@ -47,13 +47,14 @@ export namespace Login {
 // 用户管理模块
 export namespace User {
   export interface ReqUserParams extends ReqPage {
-    username: string;
-    gender: number;
-    idCard: string;
-    email: string;
-    address: string;
-    createTime: string[];
-    status: number;
+    username?: string;
+    gender?: number;
+    idCard?: string;
+    email?: string;
+    address?: string;
+    createTime?: string[];
+    status?: number;
+    tag?: string;
   }
   export interface ResUserList {
     id: string;
@@ -67,6 +68,7 @@ export namespace User {
     status: number;
     avatar: string;
     photo: any[];
+    tags?: string[];
     children?: ResUserList[];
   }
   export interface ResStatus {

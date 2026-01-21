@@ -34,14 +34,13 @@ import { HOME_URL } from "@/config";
 // import { getTimeState } from "@/utils";
 import { Login } from "@/api/interface";
 import { ElNotification } from "element-plus";
-import { loginApi } from "@/api/modules/login";
+import { loginApi, getCsrfTokenApi } from "@/api/modules/login";
 import { useUserStore } from "@/stores/modules/user";
 import { useTabsStore } from "@/stores/modules/tabs";
 import { useKeepAliveStore } from "@/stores/modules/keepAlive";
 import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
 import { CircleClose, UserFilled } from "@element-plus/icons-vue";
 import type { ElForm } from "element-plus";
-import md5 from "md5";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -68,31 +67,31 @@ const login = (formEl: FormInstance | undefined) => {
     if (!valid) return;
     loading.value = true;
     try {
-      // 1.执行登录接口
-      const { data } = await loginApi({ ...loginForm, password: md5(loginForm.password) });
-      userStore.setToken(data.access_token);
+      // 1.获取 CSRF Token (SillyTavern 开启了 CSRF 校验)
+      const csrfRes = await getCsrfTokenApi();
+      if (csrfRes.data && csrfRes.data.token) {
+        userStore.setCsrfToken(csrfRes.data.token);
+      }
 
-      // 2.添加动态路由
+      // 2.执行登录接口
+      const res = await loginApi(loginForm);
+      // SillyTavern 返回的是 { handle: 'xxx' }
+      userStore.setToken(res.data.handle);
+
+      // 3.添加动态路由
       await initDynamicRouter();
 
-      // 3.清空 tabs、keepAlive 数据
+      // 4.清空 tabs、keepAlive 数据
       tabsStore.setTabs([]);
       keepAliveStore.setKeepAliveName([]);
 
-      // 4.跳转到首页
+      // 5.跳转到首页
       router.push(HOME_URL);
-      // ElNotification({
-      //   title: getTimeState(),
-      //   message: "欢迎登录 Geeker-Admin",
-      //   type: "success",
-      //   duration: 3000
-      // });
       ElNotification({
-        title: "React 付费版本 🔥🔥🔥",
-        dangerouslyUseHTMLString: true,
-        message: "预览地址：<a href='https://pro.spicyboy.cn'>https://pro.spicyboy.cn</a>",
+        title: "登录成功",
+        message: `欢迎回来，${res.data.handle}`,
         type: "success",
-        duration: 8000
+        duration: 3000
       });
     } finally {
       loading.value = false;
@@ -122,5 +121,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@import "../index.scss";
+@import "../index";
 </style>

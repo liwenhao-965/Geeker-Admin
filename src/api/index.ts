@@ -47,6 +47,7 @@ class RequestHttp {
         config.loading && showFullScreenLoading();
         if (config.headers && typeof config.headers.set === "function") {
           config.headers.set("x-access-token", userStore.token);
+          config.headers.set("x-csrf-token", userStore.csrfToken);
         }
         return config;
       },
@@ -77,6 +78,14 @@ class RequestHttp {
         if (data.code && data.code !== ResultEnum.SUCCESS) {
           ElMessage.error(data.msg);
           return Promise.reject(data);
+        }
+        // 兼容 SillyTavern 这种非标准格式的接口，将其包装成 Geeker 期待的 ResultData 格式
+        if (!data.hasOwnProperty("code")) {
+          return {
+            code: ResultEnum.SUCCESS,
+            data: data,
+            msg: "成功"
+          } as any;
         }
         // 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
         return data;

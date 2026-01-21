@@ -29,6 +29,7 @@ export interface GlobalState {
 /* UserState */
 export interface UserState {
   token: string;
+  csrfToken: string;
   userInfo: { name: string };
 }
 

@@ -6,6 +6,7 @@ export const useUserStore = defineStore({
   id: "geeker-user",
   state: (): UserState => ({
     token: "",
+    csrfToken: "",
     userInfo: { name: "Geeker" }
   }),
   getters: {},
@@ -13,6 +14,10 @@ export const useUserStore = defineStore({
     // Set Token
     setToken(token: string) {
       this.token = token;
+    },
+    // Set CsrfToken
+    setCsrfToken(token: string) {
+      this.csrfToken = token;
     },
     // Set setUserInfo
     setUserInfo(userInfo: UserState["userInfo"]) {
