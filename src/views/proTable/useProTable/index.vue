@@ -191,10 +191,10 @@ const deleteAccount = async (params: any) => {
 };
 
 // 批量删除用户信息
-const batchDelete = async () => {
-  // 注意：SillyTavern 接口可能不支持批量删除，这里需要根据实际情况调整
-  // 目前先循环调用或者提示不支持
-  ElMessage.warning("批量删除功能暂未对接");
+const batchDelete = async (ids: string[]) => {
+  await useHandleData(deleteUser, { ids, purge: true }, "批量删除用户");
+  proTable.value?.clearSelection();
+  proTable.value?.getTableList();
 };
 
 // 重置用户密码

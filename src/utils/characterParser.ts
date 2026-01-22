@@ -26,7 +26,11 @@ export function extractDataFromPng(data: Uint8Array, identifier: string = "chara
   }
 
   let ended = false;
-  const chunks = [];
+  interface Chunk {
+    name: string;
+    data: Uint8Array;
+  }
+  const chunks: Chunk[] = [];
   let idx = 8;
 
   while (idx < data.length) {

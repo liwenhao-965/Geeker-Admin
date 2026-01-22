@@ -65,7 +65,10 @@ export namespace User {
     email: string;
     address: string;
     createTime: string;
+    created?: string;
+    lastLogin?: string;
     status: number;
+    enabled?: boolean;
     avatar: string;
     photo: any[];
     tags?: string[];
